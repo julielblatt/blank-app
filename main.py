@@ -2,18 +2,24 @@ import streamlit as st
 import numpy as np
 import joblib
 
-# Carregar o modelo treinado
-model = joblib.load('modelo_random_forest.pkl')
+# Carregar o modelo treinado e o escalador
+model = joblib.load('modelo_equinos_random_forest.pkl')
+scaler = joblib.load('scaler_equinos.pkl')
 
-st.title('Previsão do Efetivo de Rebanhos')
+st.title('Previsão do Número de Equinos')
 
-# Entradas do usuário
+# Entradas do usuário - Somente 3 colunas
 suino_total = st.number_input('Suíno - total')
-equino = st.number_input('Equino')
-bubalino = st.number_input('Bubalino')
+galinaceos_galinhas = st.number_input('Galináceos - galinhas')
+bovino = st.number_input('Bovino')
 
-# Prever com base nas entradas do usuário
+# Organizar as entradas em um array
+features = np.array([[suino_total, galinaceos_galinhas, bovino]])
+
+# Aplicar a normalização nas entradas (usando o mesmo escalador do treinamento)
+features_scaled = scaler.transform(features)
+
+# Fazer a previsão
 if st.button('Prever'):
-    features = np.array([[suino_total, equino, bubalino]])  # Adicione mais variáveis conforme necessário
-    prediction = model.predict(features)
-    st.write(f'Previsão de Bovinos: {prediction[0]}')
+    prediction = model.predict(features_scaled)
+    st.write(f'Previsão de Equinos: {prediction[0]}')
